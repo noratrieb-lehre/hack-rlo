@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -au
+
+USER=Nilstrieb
+
+OPTIND=1
+
+ESC=$(printf '\e')
+
+while getopts "ih?:" opt; do
+    case "$opt" in
+        h|\?)
+            echo <<EOF
+git hack-rlo
+
+Usage: git hack-rlo [OPTIONS]
+
+Shows information about developing in the rust-lang GitHub org, mainly the rust repository.
+
+Options:
+  -h     Get help, shows this page
+EOF
+            exit
+            ;;
+    esac
+done
+
+github_search_fetch() {
+    curl -Ls \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "https://api.github.com/search/$1"
+}
+
+pretty_print_list() {
+    # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+    # Example:
+    # 2023-03-09T21:38:07Z 24💬 Add `internal_features` lint
+    echo "$1" | jq ".items[] | \"\(.created_at) \(.comments)💬 $ESC]8;;\(.url)$ESC\\\\\(.title)$ESC]8;;$ESC\\\\\"" -r
+}
+
+own_prs=$(github_search_fetch "issues?q=state%3Aopen%20author%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author")
+echo "Own PRs waiting on author"
+pretty_print_list "$own_prs"
+echo "Open full list on GitHub? (y/n)"
+read OPEN
+if [ "$OPEN" = "y" ]; then
+    open "https://github.com/rust-lang/rust/pulls?q=is%3Aopen+is%3Apr+author%3A$USER+label%3AS-waiting-on-author"
+fi
+
+prs_to_review=$(github_search_fetch "issues?q=state%3Aopen%20assignee%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author")
+echo "Assigned PRs waiting on review"
+pretty_print_list "$prs_to_review"
+echo "Open list on GitHub? (y/n)"
+read OPEN
+if [ "$OPEN" = "y" ]; then
+    open "https://github.com/rust-lang/rust/pulls?q=is%3Aopen+is%3Apr+assignee%3A$USER+label%3AS-waiting-on-review"
+fi
