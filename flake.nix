@@ -21,7 +21,7 @@
     {
       packages = forAllSystems ({ pkgs }: {
         default = pkgs.stdenv.mkDerivation {
-          name = "git-hack-${version}";
+          name = "hack-rlo-${version}";
           src = self;
           dontUnpack = true;
           installPhase = ''
