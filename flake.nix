@@ -27,7 +27,7 @@
           installPhase = ''
             install -m755 -D $src/hack-rlo $out/bin/hack-rlo
           '';
-
+          buildInputs = [ jq curl ];
           meta = {
             description = "Helper script for working on rust-lang/rust";
           };
