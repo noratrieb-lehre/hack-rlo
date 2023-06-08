@@ -2,8 +2,8 @@
 
 set -au
 
-# We hardcode the GitHub user here, as the script is for me. As a user, feel free to change this.
-USER=Nilstrieb
+# We default the GitHub user here, as the script is for me.
+GH_USER="${GH_USER:-Nilstrieb}"
 
 # Reset the option index for getopts parsing below.
 OPTIND=1
@@ -62,10 +62,10 @@ show_prs() {
     fi
 }
 
-show_prs "issues?q=state%3Aopen%20author%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author" \
-    "is%3Aopen+is%3Apr+author%3A$USER+label%3AS-waiting-on-author" \
+show_prs "issues?q=state%3Aopen%20author%3A$GH_USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author" \
+    "is%3Aopen+is%3Apr+author%3A$GH_USER+label%3AS-waiting-on-author" \
     "Own PRs waiting on author"
 
-show_prs "issues?q=state%3Aopen%20assignee%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-review" \
-    "is%3Aopen+is%3Apr+assignee%3A$USER+label%3AS-waiting-on-review" \
+show_prs "issues?q=state%3Aopen%20assignee%3A$GH_USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-review" \
+    "is%3Aopen+is%3Apr+assignee%3A$GH_USER+label%3AS-waiting-on-review" \
     "Assigned PRs waiting on review"
