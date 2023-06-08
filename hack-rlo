@@ -8,10 +8,10 @@ OPTIND=1
 
 ESC=$(printf '\e')
 
-while getopts "ih?:" opt; do
+while getopts "h?:" opt; do
     case "$opt" in
-        h|\?)
-            echo <<EOF
+        h)
+            cat <<EOF
 git hack-rlo
 
 Usage: git hack-rlo [OPTIONS]
@@ -59,6 +59,6 @@ show_prs "issues?q=state%3Aopen%20author%3A$USER%20type%3Apr%20org%3Arust-lang%2
     "is%3Aopen+is%3Apr+author%3A$USER+label%3AS-waiting-on-author" \
     "Own PRs waiting on author"
 
-show_prs "issues?q=state%3Aopen%20assignee%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author" \
+show_prs "issues?q=state%3Aopen%20assignee%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-review" \
     "is%3Aopen+is%3Apr+assignee%3A$USER+label%3AS-waiting-on-review" \
     "Assigned PRs waiting on review"
