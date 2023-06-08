@@ -2,12 +2,15 @@
 
 set -au
 
+# We hardcode the GitHub user here, as the script is for me. As a user, feel free to change this.
 USER=Nilstrieb
 
+# Reset the option index for getopts parsing below.
 OPTIND=1
 
 ESC=$(printf '\e')
 
+# Show help if the -h flag is passed.
 while getopts "h?:" opt; do
     case "$opt" in
         h)
@@ -26,6 +29,7 @@ EOF
     esac
 done
 
+# Calls the GitHub search endpoint with a query that is passed as the first argument.
 github_search_fetch() {
     curl -Ls \
         -H "Accept: application/vnd.github+json" \
@@ -33,6 +37,7 @@ github_search_fetch() {
         "https://api.github.com/search/$1"
 }
 
+# Pretty prints a JSON list from the GitHub search endpoint.
 pretty_print_list() {
     # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
     # Example:
@@ -40,6 +45,8 @@ pretty_print_list() {
     echo "$1" | jq ".items[] | \"\(.created_at) \(.comments)💬 $ESC]8;;\(.url | sub(\"api.\";\"\") | sub(\"/repos\";\"\"))$ESC\\\\\(.title)$ESC]8;;$ESC\\\\\"" -r
 }
 
+# Print all PRs that match a query. The GitHub Search API query may be different from the web UI query,
+# which is why they are passed as separate arguments.
 show_prs() {
     api_query=$1
     web_query=$2
