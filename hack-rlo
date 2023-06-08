@@ -37,7 +37,7 @@ pretty_print_list() {
     # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
     # Example:
     # 2023-03-09T21:38:07Z 24💬 Add `internal_features` lint
-    echo "$1" | jq ".items[] | \"\(.created_at) \(.comments)💬 $ESC]8;;\(.url)$ESC\\\\\(.title)$ESC]8;;$ESC\\\\\"" -r
+    echo "$1" | jq ".items[] | \"\(.created_at) \(.comments)💬 $ESC]8;;\(.url | sub(\"api.\";\"\") | sub(\"/repos\";\"\"))$ESC\\\\\(.title)$ESC]8;;$ESC\\\\\"" -r
 }
 
 own_prs=$(github_search_fetch "issues?q=state%3Aopen%20author%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author")
