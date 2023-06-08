@@ -40,20 +40,25 @@ pretty_print_list() {
     echo "$1" | jq ".items[] | \"\(.created_at) \(.comments)💬 $ESC]8;;\(.url | sub(\"api.\";\"\") | sub(\"/repos\";\"\"))$ESC\\\\\(.title)$ESC]8;;$ESC\\\\\"" -r
 }
 
-own_prs=$(github_search_fetch "issues?q=state%3Aopen%20author%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author")
-echo "Own PRs waiting on author"
-pretty_print_list "$own_prs"
-echo "Open full list on GitHub? (y/n)"
-read OPEN
-if [ "$OPEN" = "y" ]; then
-    open "https://github.com/rust-lang/rust/pulls?q=is%3Aopen+is%3Apr+author%3A$USER+label%3AS-waiting-on-author"
-fi
+show_prs() {
+    api_query=$1
+    web_query=$2
+    prompt=$3
 
-prs_to_review=$(github_search_fetch "issues?q=state%3Aopen%20assignee%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author")
-echo "Assigned PRs waiting on review"
-pretty_print_list "$prs_to_review"
-echo "Open list on GitHub? (y/n)"
-read OPEN
-if [ "$OPEN" = "y" ]; then
-    open "https://github.com/rust-lang/rust/pulls?q=is%3Aopen+is%3Apr+assignee%3A$USER+label%3AS-waiting-on-review"
-fi
+    own_prs=$(github_search_fetch "$api_query")
+    echo "$prompt"
+    pretty_print_list "$own_prs"
+    echo "Open full list on GitHub? (y/n)"
+    read OPEN
+    if [ "$OPEN" = "y" ]; then
+        open "https://github.com/rust-lang/rust/pulls?q=$web_query"
+    fi
+}
+
+show_prs "issues?q=state%3Aopen%20author%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author" \
+    "is%3Aopen+is%3Apr+author%3A$USER+label%3AS-waiting-on-author" \
+    "Own PRs waiting on author"
+
+show_prs "issues?q=state%3Aopen%20assignee%3A$USER%20type%3Apr%20org%3Arust-lang%20label%3AS-waiting-on-author" \
+    "is%3Aopen+is%3Apr+assignee%3A$USER+label%3AS-waiting-on-review" \
+    "Assigned PRs waiting on review"
